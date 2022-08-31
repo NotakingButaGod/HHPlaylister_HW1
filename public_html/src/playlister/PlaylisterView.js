@@ -111,12 +111,17 @@ export default class PlaylisterView {
             let itemDiv = document.createElement("div");
             itemDiv.classList.add("list-card");
             itemDiv.classList.add("unselected-list-card");
-            itemDiv.id = "playlist-card-" + (i + 1);
+            let number = i + 1;
+            itemDiv.id = "playlist-card-" + number;
 
             // PUT THE CONTENT INTO THE CARD
-            let itemText = document.createTextNode(song.title + " by " + song.artist);
+            let hyperlink = document.createElement("a");
+            // <a href="url">link text</a>
+            hyperlink.href = "https://www.youtube.com/watch?v=" + song.youTubeId;
+            hyperlink.innerText = song.title + " by " + song.artist;
+            let itemText = document.createTextNode(number + ".  ");
             itemDiv.appendChild(itemText);
-
+            itemDiv.appendChild(hyperlink);
             // AND PUT THE CARD INTO THE UI
             itemsDiv.appendChild(itemDiv);
         }
@@ -216,4 +221,6 @@ export default class PlaylisterView {
             statusBar.innerHTML = '';
         }
     }
+
+    
 }
