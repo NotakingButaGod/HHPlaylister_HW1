@@ -16,6 +16,7 @@ export class jsTPS_Transaction {
      */
     doTransaction() {
         console.log("doTransaction - MISSING IMPLEMENTATION");
+
     }
     
     /**

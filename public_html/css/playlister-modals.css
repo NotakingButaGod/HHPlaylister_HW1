@@ -190,3 +190,8 @@ span {
     transform: rotate(0deg);
   }
 }
+
+.inputs {
+  float : right;
+  height: 50px;
+}

@@ -51,6 +51,12 @@ export default class PlaylisterController {
             this.model.loadList(newList.id);
             this.model.saveLists();
         }
+        document.getElementById("add-button").onmousedown = (event) => {
+            let updatedlist = this.model.addNewSong("Untitled","Unknown","dQw4w9WgXcQ");
+            this.model.loadList(updatedlist.id);
+            this.model.saveLists();
+            //console.log("hello world");
+        }
         // HANDLER FOR UNDO BUTTON
         document.getElementById("undo-button").onmousedown = (event) => {
             this.model.undo();
@@ -101,7 +107,61 @@ export default class PlaylisterController {
             // CLOSE THE MODAL
             let deleteListModal = document.getElementById("delete-list-modal");
             deleteListModal.classList.remove("is-visible");
-        }        
+        }
+        // respond to delete song confirm button
+        let deleteSongConfirmButton = document.getElementById("delete-song-confirm-button");
+        deleteSongConfirmButton.onclick = (event) => {
+            // NOTE THAT WE SET THE ID OF THE LIST TO REMOVE
+            // IN THE MODEL OBJECT AT THE TIME THE ORIGINAL
+            // BUTTON PRESS EVENT HAPPENED
+            let deleteSongId = this.model.getDeleteSongId();
+
+            // DELETE THE LIST, THIS IS NOT UNDOABLE
+            this.model.deleteSong(deleteSongId);
+
+            // ALLOW OTHER INTERACTIONS
+            this.model.toggleConfirmDialogOpen();
+
+            // CLOSE THE MODAL
+            let deleteSongModal = document.getElementById("delete-song-modal");
+            deleteSongModal.classList.remove("is-visible");
+        } 
+        // respond to delete song cancel button
+        let deleteSongCancelButton = document.getElementById("delete-song-cancel-button");
+        deleteSongCancelButton.onclick = (event) => {
+            // ALLOW OTHER INTERACTIONS
+            this.model.toggleConfirmDialogOpen();
+            
+            // CLOSE THE MODAL
+            let deleteSongModal = document.getElementById("delete-song-modal");
+            deleteSongModal.classList.remove("is-visible");
+        }
+        // respond to edit song confirm button
+        let editSongConfirmButton = document.getElementById("edit-song-confirm-button");
+        editSongConfirmButton.onclick = (event) => {
+            let editSongId = this.model.getEditSongId();
+            let name = document.getElementById("titleinput").value;
+            let artist = document.getElementById("artistinput").value;
+            let youtubeid = document.getElementById("youtubeidinput").value;
+            this.model.editSong(editSongId,name,artist,youtubeid);
+
+            // ALLOW OTHER INTERACTIONS
+            this.model.toggleConfirmDialogOpen();
+
+            // CLOSE THE MODAL
+            let editSongModal = document.getElementById("edit-song-modal");
+            editSongModal.classList.remove("is-visible");
+        }
+        // respond to edit song cancel button
+        let editSongCancelButton = document.getElementById("edit-song-cancel-button");
+        editSongCancelButton.onclick = (event) => {
+            // ALLOW OTHER INTERACTIONS
+            this.model.toggleConfirmDialogOpen();
+            
+            // CLOSE THE MODAL
+            let editSongModal = document.getElementById("edit-song-modal");
+            editSongModal.classList.remove("is-visible");
+        }
     }
 
     /*
@@ -146,6 +206,8 @@ export default class PlaylisterController {
             deleteListModal.classList.add("is-visible");
             this.model.toggleConfirmDialogOpen();
         }
+
+
         // FOR RENAMING THE LIST NAME
         document.getElementById("list-card-text-" + id).ondblclick = (event) => {
             let text = document.getElementById("list-card-text-" + id)
@@ -200,18 +262,62 @@ export default class PlaylisterController {
             // GET THE CARD
             let card = document.getElementById("playlist-card-" + (i + 1));
             
+            // Delete Song
+            document.getElementById("delete-song-" + (i+1)).onmousedown = (event) => {
+                // DON'T PROPOGATE THIS INTERACTION TO LOWER-LEVEL CONTROLS
+                this.ignoreParentClick(event);
+    
+                // RECORD THE ID OF THE LIST THE USER WISHES TO DELETE
+                // SO THAT THE MODAL KNOWS WHICH ONE IT IS
+                this.model.setDeleteSongId(i);
+    
+                // VERIFY THAT THE USER REALLY WANTS TO DELETE THE PLAYLIST
+                // THE CODE BELOW OPENS UP THE LIST DELETE VERIFICATION DIALOG
+                this.SongToDeleteIndex = i;
+                let SongName = this.model.getSongFromCurrentList(i).title;
+                let deleteSpan = document.getElementById("delete-song-span");
+                deleteSpan.innerHTML = "";
+                deleteSpan.appendChild(document.createTextNode(SongName));
+                let deleteSongModal = document.getElementById("delete-song-modal");
+    
+                // OPEN UP THE DIALOG
+                deleteSongModal.classList.add("is-visible");
+                this.model.toggleConfirmDialogOpen();
+            }
+
+            document.getElementById("undo-button").onmousedown = (event) => {
+                this.model.undo();
+                
+                this.model.saveLists();
+            }
+
+            document.getElementById("redo-button").onmousedown = (event) => {
+                this.model.redo();
+            }
+            // edit song
+            card.ondblclick = (event) => {
+                this.ignoreParentClick(event);
+                //console.log("hello world");
+                this.model.setEditSongId(i);
+
+                let editSongModal = document.getElementById("edit-song-modal");
+                editSongModal.classList.add("is-visible");
+                this.model.toggleConfirmDialogOpen();
+            }
+
+
             // NOW SETUP ALL CARD DRAGGING HANDLERS AS THE USER MAY WISH TO CHANGE
             // THE ORDER OF SONGS IN THE PLAYLIST
 
             // MAKE EACH CARD DRAGGABLE
             card.setAttribute('draggable', 'true')
-
+            
             // WHEN DRAGGING STARTS RECORD THE INDEX
             card.ondragstart = (event) => {
                 card.classList.add("is-dragging");
                 event.dataTransfer.setData("from-id", i);
             }
-
+            
             // WE ONLY WANT OUR CODE, NO DEFAULT BEHAVIOR FOR DRAGGING
             card.ondragover = (event) => {
                 event.preventDefault();
@@ -237,6 +343,8 @@ export default class PlaylisterController {
                     this.model.addMoveSongTransaction(fromIndex, toIndex);
                 }
             }
+
+
         }
     }
 

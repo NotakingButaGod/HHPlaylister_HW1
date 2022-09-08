@@ -1,6 +1,7 @@
 import jsTPS from "../common/jsTPS.js";
 import Playlist from "./Playlist.js";
 import MoveSong_Transaction from "./transactions/MoveSong_Transaction.js";
+import AddSong_Transaction from "./transactions/AddSong_Transaction.js"
 
 /**
  * PlaylisterModel.js
@@ -38,6 +39,27 @@ export default class PlaylisterModel {
 
         // THE MODAL IS NOT CURRENTLY OPEN
         this.confirmDialogOpen = false;
+
+        this.songtodelete = null;
+
+        this.songtoedit = null;
+
+        this.songsadded = [];
+
+        //this.songtoadd = null;
+
+        //this.listofdeletedsong = [];
+
+        //this.listofdeletedsongname = [];
+
+        //this.listofdeletedsongartist = [];
+
+        //this.listofdeletedsongyoutubeid = [];
+        
+    }
+
+    getNameforlods(){
+        
     }
 
     // FOR MVC STUFF
@@ -68,10 +90,25 @@ export default class PlaylisterModel {
         return -1;
     }
 
+    getSongIndex(id) {
+        for (let i = 0; i < this.playlists.length; i++) {
+            for(let j = 0; j < this.playlists[i].songs.length; j++){
+                if (this.playlists[i].songs[j].id === id) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    getSongFromCurrentList(id){
+        return this.currentList.getSongAt(id);
+    }
+
     getPlaylistSize() {
         return this.currentList.songs.length;
     }
-
+    
     getSong(index) {
         return this.currentList.songs[index];
     }
@@ -82,6 +119,30 @@ export default class PlaylisterModel {
 
     setDeleteListId(initId) {
         this.deleteListId = initId;
+    }
+
+    getAddSongId() {
+        return this.songtoadd;
+    }
+
+    setAddSongId(initId){
+        this.songtoadd = initId;
+    }
+
+    getDeleteSongId() {
+        return this.songtodelete;
+    }
+
+    setDeleteSongId(initId){
+        this.songtodelete = initId;
+    }
+
+    getEditSongId() {
+        return this.songtoedit;
+    }
+
+    setEditSongId(initId){
+        this.songtoedit = initId;
     }
 
     toggleConfirmDialogOpen() {
@@ -102,6 +163,20 @@ export default class PlaylisterModel {
         this.sortLists();
         this.view.refreshLists(this.playlists);
         return newList;
+    }
+
+    addNewSong(name,artist,youtubeid){
+        if(this.hasCurrentList()){
+            this.currentList.songs.push({"title": name, "artist": artist, "youTubeId": youtubeid});
+            this.songsadded.push(this.currentList.songs.length-1);
+            //this.songtoadd = this.currentList.songs.length - 1;
+            //this.addAddSongTransaction(this.songtoadd);
+            this.view.refreshPlaylist(this.currentList);
+            //console.log("hello world!");
+        }
+        this.saveLists();
+        //console.log(this.currentList);
+        return this.currentList;
     }
 
     sortLists() {
@@ -215,10 +290,25 @@ export default class PlaylisterModel {
         }
     }
 
+    editSong(id,name,artist,youtubeid){
+        if (name !== "") {
+            this.currentList.songs[id].title = name;
+        }
+        if (artist !== "") {
+            this.currentList.songs[id].artist = artist;
+        }
+        if (youtubeid !== "") {
+            this.currentList.songs[id].youTubeId = youtubeid;
+        }
+
+        this.view.refreshPlaylist(this.currentList);
+        this.saveLists();
+    }
+
     deleteList(id) {
         let toBeDeleted = this.playlists[this.getListIndex(id)];
         this.playlists = this.playlists.filter(list => list.id !== id);
-        this.view.refreshLists(this.playlists)
+        this.view.refreshLists(this.playlists);
         // 2 cases, deleted is current list
         // deleted is not current list
         if (toBeDeleted == this.currentList) {
@@ -232,6 +322,14 @@ export default class PlaylisterModel {
         this.saveLists();
     }
 
+    deleteSong(id){
+        //this.listofdeletedsongname.push(this.currentList.songs[this.currentList.songs.length-1].title);
+        //this.listofdeletedsongartist.push(this.currentList.songs[this.currentList.songs.length-1].artist);
+        //this.listofdeletedsongyoutubeid.push(this.currentList.songs[this.currentList.songs.length-1].youTubeId);
+        this.currentList.songs.splice(id,1);
+        this.view.refreshPlaylist(this.currentList);
+        this.saveLists();
+    }
     // NEXT WE HAVE THE FUNCTIONS THAT ACTUALLY UPDATE THE LOADED LIST
 
     moveSong(fromIndex, toIndex) {
@@ -244,17 +342,25 @@ export default class PlaylisterModel {
         this.saveLists();
     }
 
+    
     // SIMPLE UNDO/REDO FUNCTIONS, NOTE THESE USE TRANSACTIONS
 
     undo() {
+        console.log("Hello world!");
         if (this.tps.hasTransactionToUndo()) {
+            console.log("Hello world~~~~~~~~");
             this.tps.undoTransaction();
             this.view.updateToolbarButtons(this);
         }
+
+        
+        
+        
     }
 
     redo() {
         if (this.tps.hasTransactionToRedo()) {
+            console.log("Hello world!");
             this.tps.doTransaction();
             this.view.updateToolbarButtons(this);
         }
@@ -268,4 +374,10 @@ export default class PlaylisterModel {
         this.tps.addTransaction(transaction);
         this.view.updateToolbarButtons(this);
     }
+
+    /*addAddSongTransaction(id){
+        let transaction = new AddSong_Transaction(this,id);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }*/
 }

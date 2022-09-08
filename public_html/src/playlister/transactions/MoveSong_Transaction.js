@@ -23,4 +23,5 @@ export default class MoveSong_Transaction extends jsTPS_Transaction {
     undoTransaction() {
         this.model.moveSong(this.newIndex, this.oldIndex);
     }
+
 }
