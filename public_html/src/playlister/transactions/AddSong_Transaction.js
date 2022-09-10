@@ -9,21 +9,13 @@ import jsTPS_Transaction from "../../common/jsTPS.js"
  * @author ?
  */
 export default class AddSong_Transaction extends jsTPS_Transaction {
-    constructor(initModel,id) {
+    constructor(initModel) {
         super();
         this.model = initModel;
-        this.id = id;
     }
 
     doTransaction() {
-        if(this.model.listofdeletedsongname.length !== 0){
-
-            let name = this.model.listofdeletedsongname[this.model.listofdeletedsongname.length-1];
-            console.log(name);
-            let artist = this.model.listofdeletedsongartist[this.model.listofdeletedsongname.length-1];
-            let youtubeid = this.model.listofdeletedsongyoutubeid[this.model.listofdeletedsongname.length-1];
-            console.log(this.model.addNewSong(name,artist,youtubeid));
-        }
+        this.id = this.model.addNewSong("Untitled","Unknown","dQw4w9WgXcQ",this.model.currentList.songs.length);
         //this.model.addNewSong(this.list)
     }
     

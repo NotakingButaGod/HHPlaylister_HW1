@@ -2,7 +2,8 @@ import jsTPS from "../common/jsTPS.js";
 import Playlist from "./Playlist.js";
 import MoveSong_Transaction from "./transactions/MoveSong_Transaction.js";
 import AddSong_Transaction from "./transactions/AddSong_Transaction.js"
-
+import DeleteSong_Transaction from "./transactions/DeleteSong_Transaction.js"
+import EditSong_Transaction from "./transactions/EditSong_Transaction.js"
 /**
  * PlaylisterModel.js
  * 
@@ -44,17 +45,13 @@ export default class PlaylisterModel {
 
         this.songtoedit = null;
 
-        this.songsadded = [];
+        this.songtoadd = null;
 
-        //this.songtoadd = null;
+        this.addsongtransid = null;
 
-        //this.listofdeletedsong = [];
+        this.editsonglist = [];
 
-        //this.listofdeletedsongname = [];
-
-        //this.listofdeletedsongartist = [];
-
-        //this.listofdeletedsongyoutubeid = [];
+        this.currentindex = 0;
         
     }
 
@@ -165,18 +162,35 @@ export default class PlaylisterModel {
         return newList;
     }
 
-    addNewSong(name,artist,youtubeid){
+    addNewSong(title,artist,youtubeid,index){
         if(this.hasCurrentList()){
-            this.currentList.songs.push({"title": name, "artist": artist, "youTubeId": youtubeid});
-            this.songsadded.push(this.currentList.songs.length-1);
-            //this.songtoadd = this.currentList.songs.length - 1;
-            //this.addAddSongTransaction(this.songtoadd);
-            this.view.refreshPlaylist(this.currentList);
+            if(title !== "Untitled" && artist !== "Unknown" && youtubeid !== "dQw4w9WgXcQ"){
+                if(index === this.currentList.songs.length){
+                    this.currentList.songs.push({"title": title, "artist": artist, "youTubeId": youtubeid});
+                    this.view.refreshPlaylist(this.currentList);
+                }
+                else{
+                    this.currentList.songs.splice(index,0,{"title": title, "artist": artist, "youTubeId": youtubeid});
+                    this.view.refreshPlaylist(this.currentList);
+                }
+            }
+            else{
+                if(index === this.currentList.songs.length){
+                    this.currentList.songs.push({"title": title, "artist": artist, "youTubeId": youtubeid});
+                    this.view.refreshPlaylist(this.currentList);
+                }
+                else{
+                    this.currentList.songs.splice(index,0,{"title": title, "artist": artist, "youTubeId": youtubeid});
+                    this.view.refreshPlaylist(this.currentList);
+                }
+            }
             //console.log("hello world!");
         }
         this.saveLists();
         //console.log(this.currentList);
-        return this.currentList;
+        //console.log((this.currentList.songs.length - 1));
+        
+        return (this.currentList.songs.length - 1) ;
     }
 
     sortLists() {
@@ -323,9 +337,6 @@ export default class PlaylisterModel {
     }
 
     deleteSong(id){
-        //this.listofdeletedsongname.push(this.currentList.songs[this.currentList.songs.length-1].title);
-        //this.listofdeletedsongartist.push(this.currentList.songs[this.currentList.songs.length-1].artist);
-        //this.listofdeletedsongyoutubeid.push(this.currentList.songs[this.currentList.songs.length-1].youTubeId);
         this.currentList.songs.splice(id,1);
         this.view.refreshPlaylist(this.currentList);
         this.saveLists();
@@ -352,10 +363,6 @@ export default class PlaylisterModel {
             this.tps.undoTransaction();
             this.view.updateToolbarButtons(this);
         }
-
-        
-        
-        
     }
 
     redo() {
@@ -375,9 +382,24 @@ export default class PlaylisterModel {
         this.view.updateToolbarButtons(this);
     }
 
-    /*addAddSongTransaction(id){
-        let transaction = new AddSong_Transaction(this,id);
+    addAddSongTransaction(){
+        let transaction = new AddSong_Transaction(this);
         this.tps.addTransaction(transaction);
         this.view.updateToolbarButtons(this);
-    }*/
+    }
+
+    addDeleteSongTransaction(){
+        let transaction = new DeleteSong_Transaction(this);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    addEditSongTransaction(newsongtitle,newsongartist,newsongyoutubeid){
+        let oldsong = this.currentList.getSongAt(this.getEditSongId());
+        console.log(oldsong);
+        let newsong = {title: newsongtitle, artist: newsongartist, youTubeId: newsongyoutubeid};
+        let transaction = new EditSong_Transaction(this, oldsong,newsong,this.getEditSongId());
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
 }

@@ -52,9 +52,7 @@ export default class PlaylisterController {
             this.model.saveLists();
         }
         document.getElementById("add-button").onmousedown = (event) => {
-            let updatedlist = this.model.addNewSong("Untitled","Unknown","dQw4w9WgXcQ");
-            this.model.loadList(updatedlist.id);
-            this.model.saveLists();
+            this.model.addAddSongTransaction();
             //console.log("hello world");
         }
         // HANDLER FOR UNDO BUTTON
@@ -117,7 +115,8 @@ export default class PlaylisterController {
             let deleteSongId = this.model.getDeleteSongId();
 
             // DELETE THE LIST, THIS IS NOT UNDOABLE
-            this.model.deleteSong(deleteSongId);
+            //this.model.deleteSong(deleteSongId);
+            this.model.addDeleteSongTransaction();
 
             // ALLOW OTHER INTERACTIONS
             this.model.toggleConfirmDialogOpen();
@@ -139,12 +138,11 @@ export default class PlaylisterController {
         // respond to edit song confirm button
         let editSongConfirmButton = document.getElementById("edit-song-confirm-button");
         editSongConfirmButton.onclick = (event) => {
-            let editSongId = this.model.getEditSongId();
+            //let editSongId = this.model.getEditSongId();
             let name = document.getElementById("titleinput").value;
             let artist = document.getElementById("artistinput").value;
             let youtubeid = document.getElementById("youtubeidinput").value;
-            this.model.editSong(editSongId,name,artist,youtubeid);
-
+            this.model.addEditSongTransaction(name,artist,youtubeid);
             // ALLOW OTHER INTERACTIONS
             this.model.toggleConfirmDialogOpen();
 
