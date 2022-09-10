@@ -9,16 +9,15 @@ import jsTPS_Transaction from "../../common/jsTPS.js"
  * @author ?
  */
 export default class DeleteSong_Transaction extends jsTPS_Transaction {
-    constructor(initModel) {
+    constructor(initModel,songtodelete,id) {
         super();
         this.model = initModel;
-        
+        this.songtodelete1 = {title: songtodelete.title, artist: songtodelete.artist, youTubeId: songtodelete.youTubeId};
+        this.id1 = id;
     }
 
     doTransaction() {
-        this.id = this.model.songtodelete;
-        this.songtoundo = this.model.getSong(this.id);
-        this.model.deleteSong(this.id);
+        this.model.deleteSong(this.id1);
 
     }
     
@@ -26,8 +25,7 @@ export default class DeleteSong_Transaction extends jsTPS_Transaction {
         //console.log(this.songtoundo);
         //console.log(this.songtoundo.title);
         //console.log(this.id);
-    
-        this.model.addNewSong(this.songtoundo.title,this.songtoundo.artist,this.songtoundo.youTubeId,this.id);
+        this.model.addNewSong(this.songtodelete1.title,this.songtodelete1.artist,this.songtodelete1.youTubeId,this.id1);
     }
 
 }

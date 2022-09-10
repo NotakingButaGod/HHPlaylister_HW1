@@ -112,7 +112,7 @@ export default class PlaylisterController {
             // NOTE THAT WE SET THE ID OF THE LIST TO REMOVE
             // IN THE MODEL OBJECT AT THE TIME THE ORIGINAL
             // BUTTON PRESS EVENT HAPPENED
-            let deleteSongId = this.model.getDeleteSongId();
+            //let deleteSongId = this.model.getDeleteSongId();
 
             // DELETE THE LIST, THIS IS NOT UNDOABLE
             //this.model.deleteSong(deleteSongId);
@@ -285,7 +285,6 @@ export default class PlaylisterController {
 
             document.getElementById("undo-button").onmousedown = (event) => {
                 this.model.undo();
-                
                 this.model.saveLists();
             }
 

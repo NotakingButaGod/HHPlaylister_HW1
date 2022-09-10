@@ -389,7 +389,8 @@ export default class PlaylisterModel {
     }
 
     addDeleteSongTransaction(){
-        let transaction = new DeleteSong_Transaction(this);
+        let songtodelete = this.currentList.getSongAt(this.getDeleteSongId());
+        let transaction = new DeleteSong_Transaction(this,songtodelete,this.getDeleteSongId());
         this.tps.addTransaction(transaction);
         this.view.updateToolbarButtons(this);
     }
