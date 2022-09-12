@@ -208,6 +208,8 @@ export default class PlaylisterController {
 
         // FOR RENAMING THE LIST NAME
         document.getElementById("list-card-text-" + id).ondblclick = (event) => {
+            //this.ifaddlistisclicked = true;
+            this.model.confirmDialogOpen = true;
             let text = document.getElementById("list-card-text-" + id)
             // CLEAR THE TEXT
             text.innerHTML = "";
@@ -229,13 +231,16 @@ export default class PlaylisterController {
             }
             textInput.onkeydown = (event) => {
                 if (event.key === 'Enter') {
+                    this.model.confirmDialogOpen = false;
                     this.model.renameCurrentList(event.target.value, id);
                     this.model.refreshToolbar();
                 }
             }
             textInput.onblur = (event) => {
+                this.model.confirmDialogOpen = false;
                 this.model.renameCurrentList(event.target.value, id);
                 this.model.refreshToolbar();
+                
             }
             textInput.focus();
             let temp = textInput.value;

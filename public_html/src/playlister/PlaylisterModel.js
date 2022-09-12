@@ -53,12 +53,10 @@ export default class PlaylisterModel {
 
         this.currentindex = 0;
         
+        //this.ifaddlistisclicked = false;
     }
 
-    getNameforlods(){
-        
-    }
-
+    
     // FOR MVC STUFF
     
     setView(initView) {

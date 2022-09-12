@@ -17,7 +17,7 @@ export class PlaylisterApp {
         this.model = new PlaylisterModel();
         this.view = new PlaylisterView();
         this.controller = new PlaylisterController();
-
+        
         // THE MODEL NEEDS THE VIEW TO NOTIFY IT EVERY TIME DATA CHANGES
         this.model.setView(this.view);
 
