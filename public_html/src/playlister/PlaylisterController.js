@@ -301,7 +301,9 @@ export default class PlaylisterController {
                 this.ignoreParentClick(event);
                 //console.log("hello world");
                 this.model.setEditSongId(i);
-
+                document.getElementById("titleinput").value = this.model.getSong(this.model.getEditSongId()).title;
+                document.getElementById("artistinput").value = this.model.getSong(this.model.getEditSongId()).artist;
+                document.getElementById("youtubeidinput").value = this.model.getSong(this.model.getEditSongId()).youTubeId;
                 let editSongModal = document.getElementById("edit-song-modal");
                 editSongModal.classList.add("is-visible");
                 this.model.toggleConfirmDialogOpen();
